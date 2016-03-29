@@ -28,38 +28,25 @@ int main(){
 	//fwrite(source_vaddr, sizeof(float), NUM_PTS * 2, fp1);
 	fclose(fp1);
 	
-	//perform fft
-	int retval = fft(input, output, num_pts, direction, scale);
+	int stop = 0;
+	while(!stop){
+		//perform fft
+		int retval = fft(input, output, num_pts, direction, scale);
 	
+		if(!retval){
+			printf("fft completed successfully");
+		}
+		else{
+			printf("fft returned value %d", retval);
+		}
 	
-	//begin area that will be allocated by another program or module
-	//allocte memory for stiumuls buffer
-	//~ float *temp_source_vaddr, *temp_dest_vaddr;
-	
-	//~ temp_source_vaddr = (float*)malloc(sizeof(float)*2*MAX_NUM_PTS);
-	//~ if (temp_source_vaddr == NULL){
-		//~ printf("ERROR! Failed to allocate memory for the stimulus buffer.\n\r");
-		//~ return -1;
-	//~ }
-
-	//allocate memory for result buffer
-	//temp_dest_vaddr = (float*)malloc(sizeof(float)*2*MAX_NUM_PTS);
-	
-	//~ if (temp_dest_vaddr == NULL){
-		//~ printf("ERROR! Failed to allocate memory for the result buffer.\n\r");
-		//~ return -1;
-	//~ }	
-	
-	//end area that will be done by another program or module	
-	
-	//copy input data to physical data registers
-	//memcpy(source_vaddr, temp_source_vaddr, TOT_BYTES);
-	
-	
-	FILE *fp2;
-	fp2 = fopen("/home/alarm/Workspace/src/results.txt", "w+");
-	//fwrite((float*)dest_vaddr, sizeof(float), NUM_PTS * 2, fp2);
-	fclose(fp2);
+		FILE fp2 = fopen("/home/alarm/Workspace/src/results.txt", "w+");
+		//fwrite((float*)dest_vaddr, sizeof(float), NUM_PTS * 2, fp2);
+		fclose(fp2);
+		
+		printf("Enter 0 to continue or 1 to close: ");
+		scanf("%d",&stop);
+	}
 	
 	return 0;
 }
