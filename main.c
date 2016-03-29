@@ -15,6 +15,7 @@
 #include <string.h>
 #include "main.h"
 #include "stim.h"
+#include "fft.h"
 
 extern float sig_two_sine_waves[2*MAX_NUM_PTS];
 
