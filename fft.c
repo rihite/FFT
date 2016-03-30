@@ -1,3 +1,4 @@
+
 #include <sys/mman.h>
 #include <stdint.h>
 #include <fcntl.h>
@@ -100,13 +101,12 @@ int fft(float* input, float* output, int num_pts, int direction, int scale){
 		return 1;
 	}
 	
-	//copy input data to physical data registers
-	//memcpy(source_vaddr, temp_source_vaddr, TOT_BYTES);
-	//copy from stim.h
-	memset((void *)source_vaddr,0,sizeof(float)*2*MAX_NUM_PTS);
+	
+	
 	printf("the first val is %f\n", *((volatile float*)(source_vaddr+1)));
 	
 	
+	//copy input data to physical data registers	
 	memcpy(source_vaddr, input, sizeof(float)*2*MAX_NUM_PTS);
 	printf("the first val is %f\n", *((volatile float*)(source_vaddr+1)));
 	

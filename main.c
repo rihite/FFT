@@ -7,15 +7,12 @@
  
  //portions of code used from http://lauri.lsxn--vsandi-pxa.com/hdl/zynq/xilinx-dma.html
 
-#include <stdio.h>
-#include <sys/mman.h>
-#include <fcntl.h>
-#include <stdint.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "main.h"
-#include "stim.h"
 #include "fft.h"
+#include "stim.h"
 
 extern float sig_two_sine_waves[2*MAX_NUM_PTS];
 
@@ -27,9 +24,17 @@ int main(){
 	int direction = 1; // 1 = forward, 0 = inverse
 	int scale = 0x2AB;
 	
+	//allocate data buffers
+	//this will be done in a program trying to use fft.h
+	//these buffers should be the maximum size alway even if not used
 	float *input = (float *)malloc(MAX_NUM_PTS*BYTES_PER_PT);
 	float *output = (float *)malloc(MAX_NUM_PTS*BYTES_PER_PT);
 	
+	//make sure buffers are clear...probably inefficient
+	memset((void *)input, 0, MAX_NUM_PTS*BYTES_PER_PT);
+	memset((void *)output, 0, MAX_NUM_PTS*BYTES_PER_PT);
+	
+	//TODO:  need to change this to read from an input file
 	memcpy(input, sig_two_sine_waves, sizeof(float)*2*MAX_NUM_PTS);
 	
 	int stop = 0;
@@ -52,30 +57,7 @@ int main(){
 		scanf("%d",&stop);
 	}
 	
-	//begin area that will be allocated by another program or module
-	//allocte memory for stiumuls buffer
-	//~ float *temp_source_vaddr, *temp_dest_vaddr;
-	
-	//~ temp_source_vaddr = (float*)malloc(sizeof(float)*2*MAX_NUM_PTS);
-	//~ if (temp_source_vaddr == NULL){
-		//~ printf("ERROR! Failed to allocate memory for the stimulus buffer.\n\r");
-		//~ return -1;
-	//~ }
-
-	//allocate memory for result buffer
-	//temp_dest_vaddr = (float*)malloc(sizeof(float)*2*MAX_NUM_PTS);
-	
-	//~ if (temp_dest_vaddr == NULL){
-		//~ printf("ERROR! Failed to allocate memory for the result buffer.\n\r");
-		//~ return -1;
-	//~ }	
-	
-	//end area that will be done by another program or module
-
-	
-
-	
-	
+	//free malloc'ed memory	
 	free(input);
 	free(output);
 	
