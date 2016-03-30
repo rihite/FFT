@@ -142,10 +142,10 @@ int main(){
 	memset((void *)dest_vaddr,0,sizeof(float)*2*MAX_NUM_PTS);
 	printf("the first out val is %f\n", *((volatile float*)(dest_vaddr)));
 	
-	FILE *fp1;
-	fp1 = fopen("/home/alarm/Workspace/src/inputs.txt", "w+");
-	fwrite(source_vaddr, sizeof(float), NUM_PTS * 2, fp1);
-	fclose(fp1);
+	//~ FILE *fp1;
+	//~ fp1 = fopen("/home/alarm/Workspace/src/inputs.txt", "w+");
+	//~ fwrite(source_vaddr, sizeof(float), NUM_PTS * 2, fp1);
+	//~ fclose(fp1);
 	
 	printf("DMA mapped to address %p.\n", dma_vaddr);
 	printf("GPIO mapped to address %p.\n", gpio_vaddr);	
@@ -215,10 +215,10 @@ int main(){
 	//delete from here to----
 	printf("the first output val is %f\n", *((volatile float*)(dest_vaddr)));
 	
-	FILE *fp2;
-	fp2 = fopen("/home/alarm/Workspace/src/results.txt", "w+");
-	fwrite((float*)dest_vaddr, sizeof(float), NUM_PTS * 2, fp2);
-	fclose(fp2);
+	//~ FILE *fp2;
+	//~ fp2 = fopen("/home/alarm/Workspace/src/results.txt", "w+");
+	//~ fwrite((float*)dest_vaddr, sizeof(float), NUM_PTS * 2, fp2);
+	//~ fclose(fp2);
 	//~ free(temp_sourcce_vaddr);
 	//~ free(temp_dest_vaddr);
 	//here in final codexxxxxxxxxxxxxxxxx
