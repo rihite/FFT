@@ -14,10 +14,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "main.h"
-//#include "stim.h"
+#include "stim.h"
 #include "fft.h"
 
-//extern float sig_two_sine_waves[2*MAX_NUM_PTS];
+extern float sig_two_sine_waves[2*MAX_NUM_PTS];
 
 int main(){
 
@@ -29,6 +29,8 @@ int main(){
 	
 	float *input = (float *)malloc(MAX_NUM_PTS*BYTES_PER_PT);
 	float *output = (float *)malloc(MAX_NUM_PTS*BYTES_PER_PT);
+	
+	memcpy(input, sig_two_sine_waves, sizeof(float)*2*MAX_NUM_PTS);
 	
 	int stop = 0;
 	while(stop == 0){

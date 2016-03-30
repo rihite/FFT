@@ -4,9 +4,9 @@
 #include <stdio.h>
 #include <string.h>
 #include "fft.h"
-#include "stim.h"
+//#include "stim.h"
 
-extern float sig_two_sine_waves[2*MAX_NUM_PTS];
+//extern float sig_two_sine_waves[2*MAX_NUM_PTS];
 
 //write value to address + offset
 void write_vaddr(void* vaddr, int offset, int value) {
@@ -105,7 +105,9 @@ int fft(float* input, float* output, int num_pts, int direction, int scale){
 	//copy from stim.h
 	memset((void *)source_vaddr,0,sizeof(float)*2*MAX_NUM_PTS);
 	printf("the first val is %f\n", *((volatile float*)(source_vaddr+1)));
-	memcpy(source_vaddr, sig_two_sine_waves, sizeof(float)*2*MAX_NUM_PTS);
+	
+	
+	memcpy(source_vaddr, input, sizeof(float)*2*MAX_NUM_PTS);
 	printf("the first val is %f\n", *((volatile float*)(source_vaddr+1)));
 	
 	memset((void *)dest_vaddr,0,sizeof(float)*2*MAX_NUM_PTS);
