@@ -1,6 +1,8 @@
 #ifndef FFT_H_
 #define FFT_H_
 
+#include <stdint.h>
+
 //physical addresses
 #define XPAR_CTRL_AXI_DMA_0_BASEADDR 	0x40400000
 #define XPAR_CTRL_AXI_GPIO_0_BASEADDR 	0x41200000
@@ -39,8 +41,13 @@
 //return macros
 #define FFT_SUCCESS										0
 #define MMAP_FAILURE									1
+#define OPEN_MEM_FAILURE							2
 
-//function prototype
+//function prototypes
+void write_vaddr(void* vaddr, int offset, int value);
+uint32_t read_vaddr(void* vaddr, int offset);
+void dma_s2mm_status(unsigned int* dma_virtual_address);
+void dma_mm2s_status(unsigned int* dma_virtual_address);
 int fft(float* input, float* output, int num_pts, int direction, int scale);
 
 #endif /* FFT_H_ */

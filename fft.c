@@ -1,13 +1,9 @@
-
 #include <sys/mman.h>
 #include <stdint.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
 #include "fft.h"
-//#include "stim.h"
-
-//extern float sig_two_sine_waves[2*MAX_NUM_PTS];
 
 //write value to address + offset
 void write_vaddr(void* vaddr, int offset, int value) {
@@ -19,6 +15,7 @@ uint32_t read_vaddr(void* vaddr, int offset) {
     return *((volatile uint32_t *)(vaddr + offset)) ;
 }
 
+//prints status of DMA S2MM registers
 void dma_s2mm_status(unsigned int* dma_virtual_address) {
     unsigned int status = read_vaddr(dma_virtual_address, S2MM_STATUS_REGISTER);
     printf("Stream to memory-mapped status (0x%08x@0x%02x):", status, S2MM_STATUS_REGISTER);
@@ -37,6 +34,7 @@ void dma_s2mm_status(unsigned int* dma_virtual_address) {
     printf("\n");
 }
 
+//prints status of DMA MM2S registers
 void dma_mm2s_status(unsigned int* dma_virtual_address) {
     unsigned int status = read_vaddr(dma_virtual_address, MM2S_STATUS_REGISTER);
     printf("Memory-mapped to stream status (0x%08x@0x%02x):", status, MM2S_STATUS_REGISTER);
@@ -64,135 +62,87 @@ int fft(float* input, float* output, int num_pts, int direction, int scale){
 	
 	fd = open("/dev/mem", O_RDWR);
 
-	if(fd == -1){
-		printf("cant open /dev/mem.\n");
-		return 1;
+	if(fd == -1){		
+		return OPEN_MEM_FAILURE;
 	}
 
 	//set dma virtual base address
 	dma_vaddr = mmap(0, DMA_MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, XPAR_CTRL_AXI_DMA_0_BASEADDR);
 	
-	if (dma_vaddr == (void *) -1) {
-		printf("Can't map the dma to user space.\n");
+	if (dma_vaddr == (void *) -1) {		
 		return MMAP_FAILURE;
 	}
 	
 	//set gpio virtual base addres
 	gpio_vaddr = mmap(0, GPIO_MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, XPAR_CTRL_AXI_GPIO_0_BASEADDR);
 	
-	if (gpio_vaddr == (void *) -1) {
-		printf("Can't map the gpio to user space.\n");
+	if (gpio_vaddr == (void *) -1) {		
 		return MMAP_FAILURE;
 	}
 	
 	//set source virtual base addres
 	source_vaddr = (float*)mmap(0, BUFFER_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, SOURCE_PADDR);
 	
-	if (source_vaddr == (void *) -1) {
-		printf("Can't map source address to user space.\n");
+	if (source_vaddr == (void *) -1) {		
 		return MMAP_FAILURE;
 	}
 	
 	//set  destination virtual base addres
 	dest_vaddr = (float*)mmap(0, BUFFER_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, DEST_PADDR);
 	
-	if (dest_vaddr == (void *) -1) {
-		printf("Can't map destination address to user space.\n");
+	if (dest_vaddr == (void *) -1) {		
 		return MMAP_FAILURE;
 	}
-	
-	
-	
-	printf("the first val is %f\n", *((volatile float*)(source_vaddr+1)));
-	
-	
+		
 	//copy input data to physical data registers	
 	memcpy(source_vaddr, input, sizeof(float)*2*MAX_NUM_PTS);
-	printf("the first val is %f\n", *((volatile float*)(source_vaddr+1)));
 	
-	memset((void *)dest_vaddr,0,sizeof(float)*2*MAX_NUM_PTS);
-	printf("the first out val is %f\n", *((volatile float*)(dest_vaddr)));
-	
-	
-	//~ FILE *fp1 = fopen("./inputs.txt", "
-	//~ int i;
-	//~ for(i=0; i<MAX_NUM_PTS * 2; i++){
-		//~ fprintf(fp1, "%f ", *(source_vaddr + i));
-	//~ }
-	//~ fclose(fp1);
-	
-	printf("DMA mapped to address %p.\n", dma_vaddr);
-	printf("GPIO mapped to address %p.\n", gpio_vaddr);	
+	//zero out destination memory
+	memset((void *)dest_vaddr,0,sizeof(float)*2*MAX_NUM_PTS);		
 	
 	//create fft config
+	//TODO:  neet to change these macros to variables in function call
 	fft_config = (LOG2_NUM_PTS << PTS_SHIFT);
 	fft_config |= (DIRECTION << DIRECTION_SHIFT);
 	fft_config |= (SCALE << SCALE_SHIFT);
 	
 	//write fft control to fft control register via gpio
-	write_vaddr(gpio_vaddr, 0, fft_config);	
-	printf("%x written to gpio\n", read_vaddr(gpio_vaddr, 0));
+	write_vaddr(gpio_vaddr, 0, fft_config);		
 	
-	//reset dma. writing it once resets both tx and rx channels
-	printf("Resetting DMA\n");
+	//reset dma. writing it once resets both tx and rx channels	
     write_vaddr(dma_vaddr, MM2S_CONTROL_REGISTER, DMA_RESET);
-    //wait for dma to reset itself
+    
+    //wait for both dma channels to reset
     while((read_vaddr(dma_vaddr, MM2S_CONTROL_REGISTER) & DMA_RESET) != 0);
-    while((read_vaddr(dma_vaddr, S2MM_CONTROL_REGISTER) & DMA_RESET) != 0);
-    printf("DMA is reset\n");      
-    dma_s2mm_status(dma_vaddr);
-    dma_mm2s_status(dma_vaddr);		
+    while((read_vaddr(dma_vaddr, S2MM_CONTROL_REGISTER) & DMA_RESET) != 0);    	
 	
-	//flush cache??
-	
-	//check if transfer in progress	
+	//TODO: flush cache here??	   
     
-    printf("Writing source address...\n");
-    write_vaddr(dma_vaddr, MM2S_START_ADDRESS, SOURCE_PADDR); // Write source address
-    dma_mm2s_status(dma_vaddr);    
+    // Write source address to MM2S start address register
+    write_vaddr(dma_vaddr, MM2S_START_ADDRESS, SOURCE_PADDR); 
+      
+    //start MM2S channel   
+    write_vaddr(dma_vaddr, MM2S_CONTROL_REGISTER, START);        
     
-    printf("Starting MM2S channel with all interrupts disabled...\n");
-    write_vaddr(dma_vaddr, MM2S_CONTROL_REGISTER, START);
-    dma_mm2s_status(dma_vaddr);
+    //write MM2S transfer length to register 
+    //this actually starts transfer
+    write_vaddr(dma_vaddr, MM2S_LENGTH, TOT_BYTES);        
+  
+    // Write destination address to S2MM destination address register
+    write_vaddr(dma_vaddr, S2MM_DESTINATION_ADDRESS, DEST_PADDR);     
     
-    printf("Writing MM2S transfer length...\n");
-    write_vaddr(dma_vaddr, MM2S_LENGTH, TOT_BYTES);
-    dma_mm2s_status(dma_vaddr);
+    //start S2MM channel
+    write_vaddr(dma_vaddr, S2MM_CONTROL_REGISTER, START);     
     
-    
-    printf("Writing destination address\n");
-    write_vaddr(dma_vaddr, S2MM_DESTINATION_ADDRESS, DEST_PADDR); // Write destination address
-    dma_s2mm_status(dma_vaddr);
-    
-    printf("Starting S2MM channel with all interrupts disabled...\n");
-    write_vaddr(dma_vaddr, S2MM_CONTROL_REGISTER, START);
-    dma_s2mm_status(dma_vaddr);     
-    
-    printf("Writing S2MM transfer length...\n");
-    write_vaddr(dma_vaddr, S2MM_LENGTH, TOT_BYTES);
-    dma_s2mm_status(dma_vaddr); 
+    //write S2MM transfer length
+    //this actually starts transfer
+    write_vaddr(dma_vaddr, S2MM_LENGTH, TOT_BYTES);    
 
-    printf("Waiting for MM2S synchronization...\n");
-    while((read_vaddr(dma_vaddr, MM2S_STATUS_REGISTER) & IDLE) == 0);
-    printf("finished MM2S synch\n");
-    dma_mm2s_status(dma_vaddr);	
-    
-    dma_s2mm_status(dma_vaddr);
-    printf("Waiting for S2MM sychronization...\n");
-    while((read_vaddr(dma_vaddr, S2MM_STATUS_REGISTER) & IDLE) == 0); 
-
-    dma_s2mm_status(dma_vaddr);
-    dma_mm2s_status(dma_vaddr);	
-    
-    printf("the first output val is %f\n", *((volatile float*)(dest_vaddr)));
-    
-    //~ FILE *fp2 = fopen("./outputs.txt", "w+");
-	//~ int j;
-	//~ for(j=0; j<MAX_NUM_PTS * 2; j++){
-		//~ fprintf(fp2, "%f ", *((volatile float*)(dest_vaddr + j)));
-	//~ }
-	//~ fclose(fp2);	
+    //wait for both channels to go idle signaling completion
+    while((read_vaddr(dma_vaddr, MM2S_STATUS_REGISTER) & IDLE) == 0);    
+    while((read_vaddr(dma_vaddr, S2MM_STATUS_REGISTER) & IDLE) == 0);     
 	
+	//write results to output buffer
 	memcpy(output, dest_vaddr, MAX_NUM_PTS * BYTES_PER_PT);
 	
 	return FFT_SUCCESS;
