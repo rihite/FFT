@@ -74,7 +74,7 @@ int fft(float* input, float* output, int num_pts, int direction, int scale){
 	
 	if (dma_vaddr == (void *) -1) {
 		printf("Can't map the dma to user space.\n");
-		return 1;
+		return MMAP_FAILURE;
 	}
 	
 	//set gpio virtual base addres
@@ -82,7 +82,7 @@ int fft(float* input, float* output, int num_pts, int direction, int scale){
 	
 	if (gpio_vaddr == (void *) -1) {
 		printf("Can't map the gpio to user space.\n");
-		return 1;
+		return MMAP_FAILURE;
 	}
 	
 	//set source virtual base addres
@@ -90,7 +90,7 @@ int fft(float* input, float* output, int num_pts, int direction, int scale){
 	
 	if (source_vaddr == (void *) -1) {
 		printf("Can't map source address to user space.\n");
-		return 1;
+		return MMAP_FAILURE;
 	}
 	
 	//set  destination virtual base addres
@@ -98,7 +98,7 @@ int fft(float* input, float* output, int num_pts, int direction, int scale){
 	
 	if (dest_vaddr == (void *) -1) {
 		printf("Can't map destination address to user space.\n");
-		return 1;
+		return MMAP_FAILURE;
 	}
 	
 	
@@ -186,12 +186,14 @@ int fft(float* input, float* output, int num_pts, int direction, int scale){
     
     printf("the first output val is %f\n", *((volatile float*)(dest_vaddr)));
     
-    FILE *fp2 = fopen("./outputs.txt", "w+");
-	int j;
-	for(j=0; j<MAX_NUM_PTS * 2; j++){
-		fprintf(fp2, "%f ", *((volatile float*)(dest_vaddr + j)));
-	}
-	fclose(fp2);	
+    //~ FILE *fp2 = fopen("./outputs.txt", "w+");
+	//~ int j;
+	//~ for(j=0; j<MAX_NUM_PTS * 2; j++){
+		//~ fprintf(fp2, "%f ", *((volatile float*)(dest_vaddr + j)));
+	//~ }
+	//~ fclose(fp2);	
+	
+	memcpy(output, dest_vaddr, MAX_NUM_PTS * BYTES_PER_PT);
 	
 	return FFT_SUCCESS;
 }

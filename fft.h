@@ -22,6 +22,7 @@
 #define NUM_PTS											8192
 #define BYTES_PER_PT									8
 #define TOT_BYTES											(BYTES_PER_PT * NUM_PTS)
+#define FLOATS_PER_PT									2
 #define LOG2_NUM_PTS									13
 #define DMA_MAP_SIZE 									1024
 #define GPIO_MAP_SIZE									1024
@@ -37,6 +38,7 @@
 
 //return macros
 #define FFT_SUCCESS										0
+#define MMAP_FAILURE									1
 
 //function prototype
 int fft(float* input, float* output, int num_pts, int direction, int scale);
