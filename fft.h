@@ -35,6 +35,9 @@
 #define START													0x01
 #define IDLE													0x02
 
+//return macros
+#define FFT_SUCCESS										0
+
 //function prototype
 int fft(float* input, float* output, int num_pts, int direction, int scale);
 
