@@ -142,9 +142,12 @@ int main(){
 	memset((void *)dest_vaddr,0,sizeof(float)*2*MAX_NUM_PTS);
 	printf("the first out val is %f\n", *((volatile float*)(dest_vaddr)));
 	
-	//~ FILE *fp1;
-	//~ fp1 = fopen("/home/alarm/Workspace/src/inputs.txt", "w+");
-	//~ fwrite(source_vaddr, sizeof(float), NUM_PTS * 2, fp1);
+	
+	//~ FILE *fp1 = fopen("./inputs.txt", "
+	//~ int i;
+	//~ for(i=0; i<MAX_NUM_PTS * 2; i++){
+		//~ fprintf(fp1, "%f ", *(source_vaddr + i));
+	//~ }
 	//~ fclose(fp1);
 	
 	printf("DMA mapped to address %p.\n", dma_vaddr);
@@ -215,13 +218,12 @@ int main(){
 	//delete from here to----
 	printf("the first output val is %f\n", *((volatile float*)(dest_vaddr)));
 	
-	//~ FILE *fp2;
-	//~ fp2 = fopen("/home/alarm/Workspace/src/results.txt", "w+");
-	//~ fwrite((float*)dest_vaddr, sizeof(float), NUM_PTS * 2, fp2);
-	//~ fclose(fp2);
-	//~ free(temp_sourcce_vaddr);
-	//~ free(temp_dest_vaddr);
-	//here in final codexxxxxxxxxxxxxxxxx
+	FILE *fp2 = fopen("./outputs.txt", "w+");
+	int j;
+	for(j=0; j<MAX_NUM_PTS * 2; j++){
+		fprintf(fp2, "%f ", *((volatile float*)(dest_vaddr + j)));
+	}
+	fclose(fp2);
 	
 	return 0;
 }
