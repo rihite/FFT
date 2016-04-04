@@ -76,7 +76,7 @@ int log2ofX(int x){
 int fft(float* input, float* output, int num_pts, int direction, int scale){
 	
 	//declarations
-	int fd;
+	int fd, log2of_num_pts = 0;
 	//TODO: make these pointers static
 	void *dma_vaddr, *gpio_vaddr;
 	float *source_vaddr, *dest_vaddr;	
@@ -124,7 +124,8 @@ int fft(float* input, float* output, int num_pts, int direction, int scale){
 	
 	//create fft config
 	//TODO:  neet to change these macros to variables in function call
-	fft_config = (LOG2_NUM_PTS << PTS_SHIFT);
+	log2of_num_pts = log2ofX(num_pts);
+	fft_config = (log2of_num_pts << PTS_SHIFT);
 	fft_config |= (DIRECTION << DIRECTION_SHIFT);
 	fft_config |= (SCALE << SCALE_SHIFT);
 	
