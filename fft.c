@@ -123,7 +123,6 @@ int fft(float* input, float* output, int num_pts, int direction, int scale){
 	memset((void *)dest_vaddr,0,sizeof(float)*2*MAX_NUM_PTS);		
 	
 	//create fft config
-	//TODO:  neet to change these macros to variables in function call
 	log2of_num_pts = log2ofX(num_pts);
 	fft_config = (log2of_num_pts << PTS_SHIFT);
 	fft_config |= (direction << DIRECTION_SHIFT);
