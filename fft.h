@@ -22,7 +22,6 @@
 
 #define MAX_NUM_PTS 									8192
 #define BYTES_PER_PT									8
-#define TOT_BYTES											(BYTES_PER_PT * NUM_PTS)
 #define FLOATS_PER_PT									2
 #define LOG2_NUM_PTS									13
 #define DMA_MAP_SIZE 									1024
