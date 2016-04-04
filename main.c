@@ -5,21 +5,16 @@
  *      Author: hiterd
  */
  
- //portions of code used from http://lauri.lsxn--vsandi-pxa.com/hdl/zynq/xilinx-dma.html
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "main.h"
 #include "fft.h"
-#include "stim.h"
-
-extern float sig_two_sine_waves[MAX_NUM_PTS * FLOATS_PER_PT];
 
 int main(){
 	//declarations
 	FILE *fp;
-	int i; //loop counter
+	int i, retval = 0; //loop counter
 	
 	//magic numbers
 	//these should be set by whoever is calling the fft function and not hardcoded
@@ -37,9 +32,18 @@ int main(){
 	memset((void *)input, 0, MAX_NUM_PTS*BYTES_PER_PT);
 	memset((void *)output, 0, MAX_NUM_PTS*BYTES_PER_PT);
 	
-	//TODO:  need to change this to read from an input file
-	memcpy(input, sig_two_sine_waves, sizeof(float)*2*MAX_NUM_PTS);
-	
+	//read from input file
+	fp = fopen("./inputs.txt", "r");
+        for(i = 0; i < MAX_NUM_PTS * 2; i++){
+        	retval = fscanf(fp, "%f", (input+i));
+		if(retval == EOF){
+			*(input+i) = 0;
+			break;
+		}
+        }
+        fclose(fp);
+
+
 	int stop = 0;
 	while(stop == 0){
 		//perform fft
