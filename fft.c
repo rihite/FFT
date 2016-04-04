@@ -126,8 +126,8 @@ int fft(float* input, float* output, int num_pts, int direction, int scale){
 	//TODO:  neet to change these macros to variables in function call
 	log2of_num_pts = log2ofX(num_pts);
 	fft_config = (log2of_num_pts << PTS_SHIFT);
-	fft_config |= (DIRECTION << DIRECTION_SHIFT);
-	fft_config |= (SCALE << SCALE_SHIFT);
+	fft_config |= (direction << DIRECTION_SHIFT);
+	fft_config |= (scale << SCALE_SHIFT);
 	
 	//write fft control to fft control register via gpio
 	write_vaddr(gpio_vaddr, 0, fft_config);		
