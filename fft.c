@@ -55,6 +55,24 @@ void dma_mm2s_status(unsigned int* dma_virtual_address) {
     printf("\n");
 }
 
+//returns the log base 2 of x 
+int log2ofX(int x){
+	
+	int result = -1;
+	
+	while(x > 0){
+		x = x >> 1;
+		result++;
+	}
+	if(result == -1){
+		return 0;
+	}
+	else{
+		return result;
+	}
+}
+
+
 int fft(float* input, float* output, int num_pts, int direction, int scale){
 	
 	//declarations
