@@ -49,5 +49,6 @@ uint32_t read_vaddr(void* vaddr, int offset);
 void dma_s2mm_status(unsigned int* dma_virtual_address);
 void dma_mm2s_status(unsigned int* dma_virtual_address);
 int fft(float* input, float* output, int num_pts, int direction, int scale);
+int log2ofX(int x);
 
 #endif /* FFT_H_ */
