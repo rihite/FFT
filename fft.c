@@ -149,7 +149,7 @@ int fft(float* input, float* output, int num_pts, int direction, int scale){
     
     //write MM2S transfer length to register 
     //this actually starts transfer
-    write_vaddr(dma_vaddr, MM2S_LENGTH, TOT_BYTES);        
+    write_vaddr(dma_vaddr, MM2S_LENGTH, num_pts * BYTES_PER_PT);        
   
     // Write destination address to S2MM destination address register
     write_vaddr(dma_vaddr, S2MM_DESTINATION_ADDRESS, DEST_PADDR);     
@@ -159,7 +159,7 @@ int fft(float* input, float* output, int num_pts, int direction, int scale){
     
     //write S2MM transfer length
     //this actually starts transfer
-    write_vaddr(dma_vaddr, S2MM_LENGTH, TOT_BYTES);    
+    write_vaddr(dma_vaddr, S2MM_LENGTH, num_pts * BYTES_PER_PT);    
 
     //wait for both channels to go idle signaling completion
     while((read_vaddr(dma_vaddr, MM2S_STATUS_REGISTER) & IDLE) == 0);    
