@@ -27,8 +27,6 @@
 #define GPIO_MAP_SIZE									1024
 #define BUFFER_SIZE										(MAX_NUM_PTS * BYTES_PER_PT)
 #define DMA_RESET 										0x04 
-#define DIRECTION											1 //forward
-#define SCALE													0x2AB
 #define PTS_SHIFT											0
 #define DIRECTION_SHIFT								8		
 #define SCALE_SHIFT										9
