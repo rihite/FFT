@@ -16,6 +16,7 @@ uint32_t read_vaddr(void* vaddr, int offset) {
 }
 
 //prints status of DMA S2MM registers
+//function code from http://lauri.lsxn--vsandi-pxa.com/hdl/zynq/xilinx-dma.html
 void dma_s2mm_status(unsigned int* dma_virtual_address) {
     unsigned int status = read_vaddr(dma_virtual_address, S2MM_STATUS_REGISTER);
     printf("Stream to memory-mapped status (0x%08x@0x%02x):", status, S2MM_STATUS_REGISTER);
@@ -35,6 +36,7 @@ void dma_s2mm_status(unsigned int* dma_virtual_address) {
 }
 
 //prints status of DMA MM2S registers
+//function code from http://lauri.lsxn--vsandi-pxa.com/hdl/zynq/xilinx-dma.html
 void dma_mm2s_status(unsigned int* dma_virtual_address) {
     unsigned int status = read_vaddr(dma_virtual_address, MM2S_STATUS_REGISTER);
     printf("Memory-mapped to stream status (0x%08x@0x%02x):", status, MM2S_STATUS_REGISTER);
@@ -55,7 +57,9 @@ void dma_mm2s_status(unsigned int* dma_virtual_address) {
 
 int fft(float* input, float* output, int num_pts, int direction, int scale){
 	
+	//declarations
 	int fd;
+	//TODO: make these pointers static
 	void *dma_vaddr, *gpio_vaddr;
 	float *source_vaddr, *dest_vaddr;	
 	uint32_t fft_config;
