@@ -23,7 +23,6 @@
 #define MAX_NUM_PTS 									8192
 #define BYTES_PER_PT									8
 #define FLOATS_PER_PT									2
-#define LOG2_NUM_PTS									13
 #define DMA_MAP_SIZE 									1024
 #define GPIO_MAP_SIZE									1024
 #define BUFFER_SIZE										(MAX_NUM_PTS * BYTES_PER_PT)
