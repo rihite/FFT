@@ -73,11 +73,11 @@ int log2ofX(int x){
 }
 
 
+//caculates N-Point FFT 
 int fft(float* input, float* output, int num_pts, int direction, int scale){
 	
 	//declarations
 	int fd, log2of_num_pts = 0;
-	//TODO: make these pointers static
 	void *dma_vaddr, *gpio_vaddr;
 	float *source_vaddr, *dest_vaddr;	
 	uint32_t fft_config;
